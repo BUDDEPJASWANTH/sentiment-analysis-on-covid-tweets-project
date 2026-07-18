@@ -1,0 +1,89 @@
+version: '3.8'
+
+services:
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.3.2
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - "2181:2181"
+
+  kafka:
+    image: confluentinc/cp-kafka:7.3.2
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka:29092,EXTERNAL://localhost:9092
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: covid_user
+      POSTGRES_PASSWORD: covid_password
+      POSTGRES_DB: covid_sentiment
+      POSTGRES_HOST_AUTH_METHOD: trust
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./data/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+
+  backend:
+    build: ./backend
+    ports:
+      - "8000:8000"
+    environment:
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=covid_sentiment
+      - DB_USER=covid_user
+      - DB_PASS=covid_password
+    depends_on:
+      - postgres
+    volumes:
+      - ./data:/data
+
+  consumer:
+    build: ./pipeline
+    command: ["python", "-u", "consumer.py"]
+    environment:
+      - KAFKA_BROKER=kafka:29092
+      - API_URL=http://backend:8000/predict
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=covid_sentiment
+      - DB_USER=covid_user
+      - DB_PASS=covid_password
+    depends_on:
+      - kafka
+      - postgres
+      - backend
+
+  producer:
+    build: ./pipeline
+    command: ["python", "-u", "mock_producer.py"]
+    environment:
+      - KAFKA_BROKER=kafka:29092
+      - DATA_PATH=data/covid_dataset.csv
+    volumes:
+      - ./data:/app/data
+    depends_on:
+      - kafka
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:

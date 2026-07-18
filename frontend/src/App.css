@@ -1,0 +1,46 @@
+/* Make everything truly full screen */
+html, body, #root {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+/* Remove Bootstrap width limitation */
+body {
+  background-color: #0b0f14;
+  color: white;
+  font-family: "Segoe UI", sans-serif;
+  overflow-x: hidden;
+}
+
+/* Full viewport wrapper */
+.page-wrapper {
+  min-height: calc(100vh - 70px);
+  width: 100%;
+
+  display: flex;
+  justify-content: center;   /* horizontal center */
+  align-items: center;       /* vertical center */
+  padding: 20px;
+}
+
+/* Content width control */
+.page-content {
+  width: 100%;
+  max-width: 1100px;
+}
+
+/* Make Predict card centered */
+.page-content .card {
+  margin: 0 auto;
+  max-width: 600px;
+}
+
+/* Clean card style */
+.card {
+  background: #ffffff;
+  color: black;
+  border-radius: 16px;
+  border: none;
+}

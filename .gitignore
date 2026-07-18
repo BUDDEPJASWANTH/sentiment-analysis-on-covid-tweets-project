@@ -1,0 +1,21 @@
+# Virtual environment
+.venv/
+venv/
+env/
+__pycache__/
+*.pyc
+
+# Local data & models
+*.pkl
+backend/model_transformer/
+backend/results/
+data/covid_dataset.csv
+data/user_retrain.csv
+
+# Frontend dependencies and builds
+frontend/node_modules/
+frontend/dist/
+
+# OS files
+.DS_Store
+Thumbs.db
