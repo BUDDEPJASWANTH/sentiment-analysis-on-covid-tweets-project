@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { API_URL } from "./config";
 import { motion, AnimatePresence } from "framer-motion";
 import { MessageSquare, Clock, ShieldCheck, Activity, Search } from "lucide-react";
 
@@ -14,7 +15,7 @@ function History() {
 
     const fetchHistory = async () => {
         try {
-            const response = await axios.get("http://127.0.0.1:8000/history");
+            const response = await axios.get(`${API_URL}/history`);
             setHistory(response.data);
             setLoading(false);
         } catch (error) {

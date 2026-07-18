@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { API_URL } from "./config";
 import { motion, useMotionValue, useTransform } from "framer-motion";
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip,
@@ -77,7 +78,7 @@ const InsightsPanel = ({ delay = 0 }) => {
   useEffect(() => {
     const fetchInsights = async () => {
       try {
-        const res = await axios.get("http://127.0.0.1:8000/insights");
+        const res = await axios.get(`${API_URL}/insights`);
         if (res.data && res.data.insights) {
           setInsights(res.data.insights);
         }
@@ -132,7 +133,7 @@ const SentimentMap = ({ delay = 0 }) => {
   useEffect(() => {
     const fetchGeoData = async () => {
       try {
-        const res = await axios.get("http://127.0.0.1:8000/geo-sentiment");
+        const res = await axios.get(`${API_URL}/geo-sentiment`);
         if (Array.isArray(res.data)) {
           setGeoData(res.data);
         }
@@ -240,7 +241,7 @@ const ReportModal = ({ isOpen, onClose, data }) => {
 
   const handleExportCSV = () => {
     try {
-      window.open("http://127.0.0.1:8000/export-csv", "_blank");
+      window.open(`${API_URL}/export-csv`, "_blank");
     } catch (err) {
       console.error("Export CSV Error:", err);
     }
@@ -248,7 +249,7 @@ const ReportModal = ({ isOpen, onClose, data }) => {
 
   const handleExportPDF = () => {
     try {
-      window.open("http://127.0.0.1:8000/export-pdf", "_blank");
+      window.open(`${API_URL}/export-pdf`, "_blank");
     } catch (err) {
       console.error("Export PDF Error:", err);
     }
@@ -312,7 +313,7 @@ function Dashboard() {
   useEffect(() => {
     const fetchAnalytics = async () => {
       try {
-        const res = await axios.get("http://127.0.0.1:8000/live-stats");
+        const res = await axios.get(`${API_URL}/live-stats`);
         const data = res.data;
 
         if (data.error) {

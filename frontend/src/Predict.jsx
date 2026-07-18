@@ -1,5 +1,6 @@
 import { useState } from "react";
 import axios from "axios";
+import { API_URL } from "./config";
 import { motion, AnimatePresence, useMotionValue, useTransform } from "framer-motion";
 import { Send, AlertCircle, CheckCircle2, HelpCircle, Activity, RefreshCcw, Smile, Frown, Meh, Zap, Heart, Ghost } from "lucide-react";
 
@@ -72,7 +73,7 @@ function Predict() {
     if (!text.trim()) return;
     setLoading(true);
     try {
-      const response = await axios.post("http://127.0.0.1:8000/predict", {
+      const response = await axios.post(`${API_URL}/predict`, {
         text: text,
         save: true,
       });
@@ -88,7 +89,7 @@ function Predict() {
     if (window.confirm("Train the model immediately using the collected user data? This takes a few seconds.")) {
       setRetraining(true);
       try {
-        const res = await axios.post("http://127.0.0.1:8000/retrain");
+        const res = await axios.post(`${API_URL}/retrain`);
         alert(res.data.message);
         if (res.data.status === "success" && text.trim()) {
           // Immediately predict using the newly loaded model!
